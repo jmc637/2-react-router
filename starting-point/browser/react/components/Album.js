@@ -23,7 +23,7 @@ class Album extends React.Component {
           songs={this.props.album.songs}
           currentSong={this.props.currentSong}
           isPlaying={this.props.isPlaying}
-          toggleOne={this.toggleOne} />
+          toggleOne={this.props.toggleOne} />
       </div>
     );
   }

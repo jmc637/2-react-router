@@ -13,7 +13,7 @@ class Artist extends Component {
     }
 
     render(){
-        console.log(this.props)
+        // console.log(this.props)
        return (
             <div>
                 <h3>{this.props.currentArtist.name}</h3>
@@ -39,7 +39,7 @@ class Artist extends Component {
                     songs={this.props.currentArtistSongs}
                     currentSong={this.props.currentSong}
                     isPlaying={this.props.isPlaying}
-                    toggleOne={this.props.toggleOne} />
+                    toggleOne={this.props.toggleOne}/>
                 </h4>
             </div>
         );

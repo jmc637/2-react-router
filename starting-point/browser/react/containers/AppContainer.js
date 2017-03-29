@@ -12,7 +12,7 @@ import Player from '../components/Player';
 import Artists from '../components/Artists';
 import Artist from '../components/Artist';
 
-import { convertAlbum, convertAlbums, skip } from '../utils';
+import { convertAlbum, convertAlbums, convertSong, skip } from '../utils';
 
 export default class AppContainer extends Component {
 
@@ -65,9 +65,10 @@ export default class AppContainer extends Component {
 
     Promise.all([specificArtist, artistAlbums, artistSongs])
       .spread((arist, albums, songs) => {
+          let currentArtistSongs = songs.data.map(song => convertSong(song));
           this.setState({
             currentArtist: arist.data,
-            currentArtistSongs: songs.data,
+            currentArtistSongs: currentArtistSongs,
             currentArtistAlbums: convertAlbums(albums.data),
           })
       })
@@ -147,7 +148,8 @@ export default class AppContainer extends Component {
               album: this.state.selectedAlbum,
               currentSong: this.state.currentSong,
               isPlaying: this.state.isPlaying,
-              toggle: this.toggleOne,
+              toggle: this.toggle,
+              toggleOne: this.toggleOne,
 
               // Albums (plural) component's props
               albums: this.state.albums,
