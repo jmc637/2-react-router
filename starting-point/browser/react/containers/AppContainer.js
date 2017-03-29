@@ -4,10 +4,13 @@ import axios from 'axios';
 import initialState from '../initialState';
 import AUDIO from '../audio';
 
+import Promise from 'bluebird';
 import Albums from '../components/Albums';
 import Album from '../components/Album';
 import Sidebar from '../components/Sidebar';
 import Player from '../components/Player';
+import Artists from '../components/Artists';
+import Artist from '../components/Artist';
 
 import { convertAlbum, convertAlbums, skip } from '../utils';
 
@@ -23,23 +26,51 @@ export default class AppContainer extends Component {
     this.prev = this.prev.bind(this);
     this.selectAlbum = this.selectAlbum.bind(this);
     this.deselectAlbum = this.deselectAlbum.bind(this);
+    this.selectArtist = this.selectArtist.bind(this);
   }
 
   componentDidMount () {
     axios.get('/api/albums/')
       .then(res => res.data)
-      .then(album => this.onLoad(convertAlbums(album)));
+      .then(album => this.onLoadAlbums(convertAlbums(album)));
+    axios.get('/api/artists/')
+      .then(res => {
+        return res.data;
+      })
+      .then(artist => this.onLoadArtists(artist));
 
     AUDIO.addEventListener('ended', () =>
       this.next());
+
     AUDIO.addEventListener('timeupdate', () =>
       this.setProgress(AUDIO.currentTime / AUDIO.duration));
   }
 
-  onLoad (albums) {
+  onLoadAlbums (albums) {
     this.setState({
       albums: albums
     });
+  }
+
+  onLoadArtists (artists) {
+    this.setState({
+      artists: artists
+    });
+  }
+
+  selectArtist (artistId) {
+    let specificArtist = axios.get(`/api/artists/${artistId}`)
+    let artistAlbums = axios.get(`/api/artists/${artistId}/albums`)
+    let artistSongs = axios.get(`/api/artists/${artistId}/songs`)
+
+    Promise.all([specificArtist, artistAlbums, artistSongs])
+      .spread((arist, albums, songs) => {
+          this.setState({
+            currentArtist: arist.data,
+            currentArtistSongs: songs.data,
+            currentArtistAlbums: convertAlbums(albums.data),
+          })
+      })
   }
 
   play () {
@@ -120,7 +151,13 @@ export default class AppContainer extends Component {
 
               // Albums (plural) component's props
               albums: this.state.albums,
-              selectAlbum: this.selectAlbum // note that this.selectAlbum is a method, and this.state.selectedAlbum is the chosen album
+              selectAlbum: this.selectAlbum, // note that this.selectAlbum is a method, and this.state.selectedAlbum is the chosen album
+
+              artists: this.state.artists,
+              selectArtist: this.selectArtist,
+              currentArtist: this.state.currentArtist,
+              currentArtistSongs: this.state.currentArtistSongs,
+              currentArtistAlbums: this.state.currentArtistAlbums,
             })
             : null
         }
