@@ -5,36 +5,28 @@ class Album extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      selectedAlbumId : -1
-    }
   }
 
-  ComponentDidMount () {
-    this.setState({
-      selectedAlbumId : props.params.albumId
-    })
-    this.props.selectAlbum(this.state.slectedAlbumId)
+  componentDidMount () {
+    console.log(this.props.params.albumId);
+    this.props.selectAlbum(this.props.params.albumId)
   }
 
   render () {
     return (
       <div className="album">
         <div>
-          <h3>{ album.name }</h3>
-          <img src={ album.imageUrl } className="img-thumbnail" />
+          <h3>{ this.props.album.name }</h3>
+          <img src={ this.props.album.imageUrl } className="img-thumbnail" />
         </div>
         <Songs
-          songs={album.songs}
-          currentSong={currentSong}
-          isPlaying={isPlaying}
-          toggleOne={toggleOne} />
+          songs={this.props.album.songs}
+          currentSong={this.props.currentSong}
+          isPlaying={this.props.isPlaying}
+          toggleOne={this.toggleOne} />
       </div>
     );
   }
 }
-// const Album = (props) => {
-
-// }
 
 export default Album;
